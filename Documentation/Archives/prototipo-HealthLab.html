@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Saúde Perto — Protótipo</title>
+<style>
+  :root{--navy:#12304a;--navy2:#1b4563;--teal:#087e79;--teal2:#e5f5f2;--mint:#d7f1ea;--bg:#f3f7f8;--surface:#fff;--line:#dce6e9;--text:#1d3444;--muted:#617786;--green:#16834a;--greenbg:#e6f5ec;--amber:#a76600;--amberbg:#fff3dc;--red:#b53636;--redbg:#fdeaea;--blue:#2d6fba;--bluebg:#eaf2fc;--shadow:0 12px 32px rgba(18,48,74,.08);--radius:18px}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)} button,input,select{font:inherit} button{cursor:pointer}
+  .topbar{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100vw - 1400px)/2));gap:18px;position:sticky;top:0;z-index:20;box-shadow:0 4px 18px #102d4529}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.5px;font-size:21px}.brandmark{width:38px;height:38px;border-radius:12px;background:#d8f3ec;color:var(--teal);display:grid;place-items:center;font-size:23px;font-weight:900}.brand small{display:block;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;opacity:.68;font-weight:700;margin-top:1px}
+  .switcher{display:flex;gap:6px;background:#ffffff17;padding:5px;border-radius:13px}.switcher button{border:0;border-radius:9px;background:transparent;color:#e4edf1;padding:10px 14px;font-size:13px;font-weight:700}.switcher button.active{background:#fff;color:var(--navy)}
+  .topmeta{font-size:12px;color:#d4e1e9;display:flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:#73dfae;display:inline-block}
+  main{max-width:1400px;margin:0 auto;padding:28px 28px 48px}.view{display:none}.view.active{display:block}
+  .eyebrow{font-weight:800;color:var(--teal);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:22px}.heading h1{margin:7px 0 5px;font-size:30px;letter-spacing:-1px;color:var(--navy)}.heading p{margin:0;color:var(--muted);font-size:14px}.demo-tag{padding:8px 11px;border-radius:99px;background:#fff3dc;color:#8c5b08;border:1px solid #f2dfb8;font-size:11px;font-weight:800;white-space:nowrap}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.searchbar{display:flex;align-items:center;gap:12px;background:white;border:1px solid var(--line);border-radius:15px;padding:10px 12px 10px 17px;box-shadow:var(--shadow);margin-bottom:20px}.searchicon{font-size:21px;color:var(--teal)}.searchbar input{border:0;outline:0;flex:1;min-width:80px;font-size:15px;color:var(--text)}.primary{background:var(--teal);border:0;color:white;padding:13px 18px;border-radius:11px;font-weight:800}.primary:hover{background:#066b67}.secondary{background:white;color:var(--navy);border:1px solid var(--line);padding:11px 15px;border-radius:11px;font-weight:750}.ghost{background:transparent;border:0;color:var(--teal);font-weight:800;padding:8px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}.chip{background:white;border:1px solid var(--line);border-radius:99px;padding:8px 13px;font-size:12px;color:var(--muted);font-weight:700}.chip.selected{background:var(--teal2);border-color:#a5d9d0;color:#075e5a}
+  .desktop-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(390px,.85fr);gap:18px;align-items:stretch}.map-panel{padding:18px;min-height:570px;position:relative;overflow:hidden}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.panel-title h2{font-size:16px;color:var(--navy);margin:0}.caption{font-size:11px;color:var(--muted)}
+  .map-art{height:360px;border-radius:14px;position:relative;overflow:hidden;background:#eaf1e9;border:1px solid #d7e2d9;background-image:linear-gradient(25deg,transparent 47%,#fff 48%,#fff 51%,transparent 52%),linear-gradient(115deg,transparent 45%,#fff 46%,#fff 49%,transparent 50%),linear-gradient(90deg,#d9e6d9 1px,transparent 1px),linear-gradient(#d9e6d9 1px,transparent 1px);background-size:100% 100%,100% 100%,48px 48px,48px 48px}
+  .park{position:absolute;background:#cbe5d1;border-radius:35% 65% 51% 49%;opacity:.8}.park.p1{width:160px;height:90px;left:10%;top:13%;transform:rotate(-20deg)}.park.p2{width:110px;height:75px;right:8%;bottom:12%;transform:rotate(23deg)}.water{position:absolute;background:#d2e8ef;opacity:.9;width:70%;height:25px;left:15%;top:58%;transform:rotate(-12deg);border-radius:50%}
+  .road{position:absolute;background:#fff;border:1px solid #dce5dc;height:18px;transform-origin:center}.r1{width:120%;top:44%;left:-10%;transform:rotate(11deg)}.r2{width:95%;top:26%;left:8%;transform:rotate(72deg)}.r3{width:85%;top:73%;left:4%;transform:rotate(-29deg)}
+  .map-label{position:absolute;color:#718679;font-size:10px;font-weight:800;letter-spacing:.5px}.pin{position:absolute;width:38px;height:38px;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:grid;place-items:center;color:white;font-size:15px;border:3px solid white;box-shadow:0 4px 12px #264b4255}.pin span{transform:rotate(45deg)}.pin.green{background:#17844e}.pin.amber{background:#d38a13}.pin.red{background:#bd4141}.pin.p-a{left:28%;top:28%}.pin.p-b{left:61%;top:57%}.pin.p-c{left:77%;top:21%}.you{position:absolute;left:48%;top:40%;width:13px;height:13px;border:3px solid white;background:#357ac0;border-radius:50%;box-shadow:0 0 0 7px #357ac033}.map-key{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:11px}.key{display:flex;align-items:center;gap:6px}.key i{height:9px;width:9px;border-radius:50%;display:inline-block}
+  .right-col{display:flex;flex-direction:column;gap:14px}.unit-list{padding:17px}.unit{padding:14px 0;border-bottom:1px solid #edf1f2;display:flex;align-items:flex-start;gap:12px}.unit:last-child{border:0;padding-bottom:0}.unit:first-of-type{padding-top:4px}.unit-icon{width:39px;height:39px;border-radius:12px;background:#e8f3f1;display:grid;place-items:center;font-size:20px;flex:none}.unit h3{font-size:13px;margin:0 0 4px;color:var(--navy)}.unit p{font-size:11px;color:var(--muted);margin:0 0 7px}.status{font-size:10px;border-radius:99px;padding:5px 8px;display:inline-flex;align-items:center;gap:5px;font-weight:800}.s-green{background:var(--greenbg);color:var(--green)}.s-amber{background:var(--amberbg);color:var(--amber)}.s-red{background:var(--redbg);color:var(--red)}.s-blue{background:var(--bluebg);color:var(--blue)}.unit .unit-action{margin-left:auto;font-size:11px;color:var(--teal);font-weight:800;white-space:nowrap}
+  .detail{padding:18px}.detail h2{font-size:17px;color:var(--navy);margin:0 0 5px}.detail .sub{font-size:11px;color:var(--muted);margin:0 0 15px}.detail-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef2f3;font-size:12px;gap:10px}.detail-row:last-child{border:0}.medicine{font-weight:800;color:#29475b}.qty{font-weight:850;color:var(--green)}.fresh{font-size:10px;color:var(--muted);margin:13px 0 0}
+  .disclaimer{background:#fff8e9;border:1px solid #f1e1bd;border-radius:12px;padding:11px 13px;color:#76551e;font-size:11px;line-height:1.45;margin-top:14px}
+  /* mobile */
+  .mobile-stage{display:flex;justify-content:center}.phone{width:100%;max-width:410px;background:#f4f8f8;border:9px solid #182b38;border-radius:34px;overflow:hidden;box-shadow:0 18px 45px #102d4530;min-height:790px;position:relative}.phone-notch{height:22px;background:#182b38;width:110px;margin:0 auto;border-radius:0 0 14px 14px}.mobile-app{padding:18px 16px 28px}.mobile-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}.mobile-head .brand{color:var(--navy);font-size:17px}.mobile-head .brandmark{width:32px;height:32px;font-size:18px}.avatar{width:34px;height:34px;border-radius:50%;background:#e4efef;color:var(--teal);display:grid;place-items:center;font-weight:900}.mobile-app h1{font-size:24px;line-height:1.15;margin:10px 0 7px;color:var(--navy);letter-spacing:-.6px}.mobile-app .intro{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 17px}.mobile-search{display:flex;gap:8px;background:white;border:1px solid var(--line);padding:8px;border-radius:13px;margin-bottom:12px}.mobile-search input{min-width:0;flex:1;border:0;outline:0;font-size:12px;padding-left:4px}.mobile-search button{border:0;background:var(--teal);color:white;border-radius:9px;padding:10px 12px;font-weight:800}.map-mini{height:135px;border-radius:14px;position:relative;overflow:hidden;margin:14px 0;background:#e7efe6;border:1px solid #d8e4db;background-image:linear-gradient(35deg,transparent 48%,white 49%,white 52%,transparent 53%),linear-gradient(100deg,transparent 46%,white 47%,white 50%,transparent 51%),linear-gradient(90deg,#d4e1d6 1px,transparent 1px),linear-gradient(#d4e1d6 1px,transparent 1px);background-size:100% 100%,100% 100%,35px 35px,35px 35px}.map-mini .pin{width:27px;height:27px;font-size:10px;border-width:2px}.map-mini .pin.p-a{left:22%;top:25%}.map-mini .pin.p-b{left:59%;top:54%}.map-mini .pin.p-c{left:81%;top:18%}.mobile-section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px}.mobile-section-title h2{font-size:14px;margin:0;color:var(--navy)}.mobile-section-title span{font-size:10px;color:var(--teal);font-weight:800}.mobile-card{background:white;border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:9px}.mobile-card-top{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}.mobile-card h3{font-size:12px;margin:0 0 4px;color:var(--navy)}.mobile-card p{font-size:10px;color:var(--muted);margin:0 0 8px}.mobile-card .meta{font-size:10px;color:var(--muted);margin-top:9px}.mobile-card .availability{font-size:11px;font-weight:850;color:var(--green)}.mobile-card button{border:0;background:var(--teal2);color:#075e5a;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:850;margin-top:9px}.mobile-bottom{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 12px;display:flex;justify-content:space-around;color:var(--muted);font-size:10px}.mobile-bottom b{color:var(--teal)}
+  /* kiosk */
+  .kiosk-shell{max-width:1100px;margin:0 auto;background:#e8eef1;padding:22px;border-radius:26px;border:1px solid #d5e0e5;box-shadow:var(--shadow)}.kiosk-frame{background:#fff;border:10px solid #233d50;border-radius:25px;overflow:hidden;min-height:670px;box-shadow:0 12px 28px #19344822;display:flex;flex-direction:column}.kiosk-top{height:65px;background:var(--navy);color:white;display:flex;justify-content:space-between;align-items:center;padding:0 24px}.kiosk-top .brand{font-size:19px}.kiosk-top .brandmark{width:34px;height:34px;font-size:19px}.kiosk-tools{display:flex;gap:9px;align-items:center}.voice-toggle{background:#ffffff1b;border:1px solid #ffffff45;border-radius:99px;color:white;padding:8px 12px;font-size:12px;font-weight:800}.kiosk-clock{font-size:11px;color:#d8e5ec}.kiosk-content{padding:34px 48px;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.kiosk-welcome{max-width:700px}.kiosk-welcome .big-icon{height:85px;width:85px;border-radius:25px;background:var(--teal2);color:var(--teal);display:grid;place-items:center;font-size:44px;margin:0 auto 16px}.kiosk-welcome h1{font-size:36px;color:var(--navy);letter-spacing:-1px;margin:0 0 10px}.kiosk-welcome p{font-size:17px;line-height:1.5;color:var(--muted);margin:0 auto 27px;max-width:550px}.kiosk-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:660px}.kiosk-option{background:white;border:2px solid var(--line);border-radius:19px;padding:22px 15px;min-height:170px;color:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:850}.kiosk-option:hover{border-color:#81c8bd;background:#f6fcfa}.kiosk-option .ico{width:55px;height:55px;background:var(--teal2);border-radius:16px;display:grid;place-items:center;font-size:28px;color:var(--teal)}.kiosk-option small{font-size:12px;color:var(--muted);font-weight:600}.kiosk-bottom{background:#f6f9fa;border-top:1px solid var(--line);padding:13px 24px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.kiosk-bottom strong{color:var(--navy)}.kiosk-step{width:100%;max-width:760px;text-align:left}.step-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.step-top .back{border:0;background:#eef4f5;color:var(--navy);border-radius:10px;padding:11px 14px;font-weight:800}.step-count{font-size:12px;color:var(--muted);font-weight:800}.kiosk-step h2{font-size:30px;color:var(--navy);margin:5px 0 8px;letter-spacing:-.7px}.kiosk-step .lead{font-size:15px;color:var(--muted);margin:0 0 22px;line-height:1.5}.big-input{width:100%;padding:19px 18px;border:2px solid #cbdadd;border-radius:14px;font-size:20px;outline:0}.big-input:focus{border-color:var(--teal)}.kiosk-suggestions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 24px}.kiosk-suggestions button{border:1px solid #bcd7d3;background:#f1faf8;color:#075e5a;padding:12px 16px;border-radius:99px;font-size:14px;font-weight:800}.kiosk-cta{width:100%;display:flex;justify-content:flex-end;gap:10px}.kiosk-cta .primary{font-size:16px;padding:16px 22px}.scan-box{border:2px dashed #9cb9bd;border-radius:18px;background:#f7fbfb;padding:26px;text-align:center}.scan-box .scan-icon{font-size:40px}.scan-box h3{font-size:18px;margin:8px 0;color:var(--navy)}.scan-box p{font-size:13px;color:var(--muted);line-height:1.5}.scan-box input{display:block;margin:14px auto;max-width:100%;font-size:12px}.rx-result{background:#f6faf9;border:1px solid #cfe5df;border-radius:15px;padding:17px;margin:14px 0}.rx-line{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #dcebe7;font-size:14px}.rx-line:last-child{border:0}.rx-line b{color:var(--navy)}.result-summary{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.result-pill{padding:10px 13px;border-radius:11px;background:var(--greenbg);color:var(--green);font-size:13px;font-weight:850}.result-pill.warn{background:var(--amberbg);color:var(--amber)}.nearest{border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;background:#fff}.nearest h3{font-size:17px;color:var(--navy);margin:0 0 5px}.nearest p{font-size:13px;color:var(--muted);margin:0 0 10px}.nearest .stock{font-size:14px;font-weight:900;color:var(--green)}.nearest .stock.none{color:var(--red)}.nearest-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.nearest-actions button{font-size:14px;padding:13px 16px}.kiosk-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:13px}
+
+  /* kiosk touch controls and external scanner simulator */
+  .kiosk-shell{max-width:1280px}
+  .kiosk-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:stretch}
+  .kiosk-device{min-width:0}
+  .kiosk-frame{min-height:720px}
+  .kiosk-content{min-height:590px}
+  .big-input{cursor:pointer;background:#fff}
+  .big-input[readonly]{background:#fff;cursor:pointer}
+  .virtual-keyboard{margin:17px 0 20px;padding:14px;background:#eaf0f3;border:1px solid #d5e0e5;border-radius:17px;box-shadow:inset 0 1px 0 #fff}
+  .virtual-keyboard-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;color:var(--navy);font-size:12px;font-weight:850}
+  .virtual-keyboard-head button{border:0;background:#dce7eb;color:var(--navy);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:850}
+  .key-row{display:flex;justify-content:center;gap:6px;margin:6px 0}
+  .vk-key{flex:1;min-width:0;min-height:49px;border:1px solid #c7d4da;border-bottom-width:3px;border-radius:9px;background:#fff;color:#203b4e;font-size:17px;font-weight:800;box-shadow:0 1px 2px #17384b0d;touch-action:manipulation}
+  .vk-key:active{transform:translateY(1px);border-bottom-width:1px;background:#e7f6f2}
+  .vk-key.vk-wide{flex:1.65;font-size:13px;background:#dce8ec}
+  .vk-key.vk-space{flex:4;font-size:12px}
+  .kiosk-suggestions button,.kiosk-option,.kiosk-cta button,.step-top .back,.voice-toggle{touch-action:manipulation}
+  .tutorial-wrap{margin:8px 0 17px}
+  .tutorial-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+  .tutorial-heading strong{color:var(--navy);font-size:14px}
+  .tutorial-heading button{border:1px solid var(--line);background:#fff;border-radius:9px;color:var(--teal);padding:8px 10px;font-size:11px;font-weight:850}
+  .tutorial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .tutorial-frame{background:#f7fbfb;border:2px solid #d9e5e7;border-radius:15px;padding:10px 8px 11px;text-align:center;transition:border-color .2s,background .2s,transform .2s;min-width:0}
+  .tutorial-frame.is-active{border-color:var(--teal);background:#eaf8f5;transform:translateY(-3px);box-shadow:0 7px 18px #087e7918}
+  .tutorial-frame .frame-number{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#dbe9ec;color:var(--navy);font-size:11px;font-weight:900;margin-bottom:3px}
+  .tutorial-frame.is-active .frame-number{background:var(--teal);color:#fff}
+  .tutorial-art{width:100%;height:98px;display:block;margin:0 auto 5px}
+  .tutorial-frame b{display:block;color:var(--navy);font-size:12px;margin-bottom:3px}
+  .tutorial-frame small{display:block;color:var(--muted);font-size:10px;line-height:1.35}
+  .scanner-status{display:flex;align-items:center;gap:12px;background:#f2f7f8;border:1px solid #dce7e9;border-radius:13px;padding:12px 14px;margin:12px 0 17px}
+  .scanner-status .status-lamp{width:12px;height:12px;border-radius:50%;background:#d38a13;box-shadow:0 0 0 5px #d38a1320;flex:none}
+  .scanner-status.received .status-lamp{background:var(--green);box-shadow:0 0 0 5px #16834a20}
+  .scanner-status strong{display:block;color:var(--navy);font-size:12px}
+  .scanner-status small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+  .scan-progress{height:5px;background:#dbe7e9;border-radius:9px;overflow:hidden;margin-top:7px;display:none}
+  .scan-progress span{height:100%;width:35%;display:block;background:var(--teal);border-radius:9px;animation:scanMove 1.1s ease-in-out infinite alternate}
+  .scanner-status.scanning .scan-progress{display:block}
+  @keyframes scanMove{from{width:10%}to{width:100%}}
+  .scanner-simulator{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:13px;align-self:stretch}
+  .simulator-label{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--teal);font-weight:900}
+  .scanner-simulator h3{font-size:17px;color:var(--navy);line-height:1.2;margin:0}
+  .scanner-simulator p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+  .scanner-hardware{border:1px solid #cbd8dd;border-radius:15px;background:linear-gradient(180deg,#f7fafb,#e6eef1);padding:15px 12px 12px;text-align:center}
+  .scanner-hardware .scanner-lid{height:68px;border:5px solid #718895;border-bottom:8px solid #526d7c;border-radius:12px 12px 7px 7px;background:linear-gradient(140deg,#eaf1f3,#cfdde2);position:relative;margin-bottom:8px;box-shadow:inset 0 3px 7px #fff}
+  .scanner-hardware .scanner-lid:before{content:'';position:absolute;left:15%;right:15%;top:13px;height:28px;border-radius:4px;background:#fff;border:1px solid #bdcbd0;box-shadow:0 2px 5px #15394c18}
+  .scanner-hardware .scanner-slot{height:10px;width:78%;margin:0 auto 8px;background:#263f50;border-radius:5px;box-shadow:inset 0 2px 4px #0008}
+  .scanner-hardware .scanner-light{width:8px;height:8px;background:#d38a13;border-radius:50%;display:inline-block;margin-right:5px;box-shadow:0 0 0 4px #d38a1320}
+  .scanner-hardware small{font-size:10px;color:#526d7c;font-weight:800}
+  .simulator-upload{border:2px dashed #bfd0d5;background:#f8fbfc;border-radius:13px;padding:13px;text-align:center}
+  .simulator-upload .upload-symbol{font-size:26px;color:var(--teal);margin-bottom:5px}
+  .simulator-upload label{display:inline-flex;align-items:center;justify-content:center;background:#e1f2ef;color:#075e5a;border:1px solid #b9ded7;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:850;cursor:pointer;min-height:42px}
+  .simulator-upload input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .simulator-file-name{font-size:10px!important;color:var(--navy)!important;overflow-wrap:anywhere;margin-top:9px!important}
+  .simulator-preview{display:none;width:100%;max-height:150px;object-fit:contain;border-radius:9px;margin-top:9px;background:#edf2f3}
+  .simulator-button{width:100%;padding:13px 12px!important;font-size:13px!important}
+  .simulator-button:disabled{opacity:.45;cursor:not-allowed}
+  .simulator-footnote{font-size:10px!important;border-top:1px solid #edf1f2;padding-top:11px}
+  .kiosk-cta{margin-top:10px}
+  @media(max-width:1050px){.kiosk-layout{grid-template-columns:1fr}.scanner-simulator{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center}.scanner-simulator .simulator-label,.scanner-simulator h3,.scanner-simulator p,.scanner-simulator .simulator-footnote{grid-column:1/-1}.scanner-hardware{grid-row:4 / span 2}.simulator-upload{grid-column:2;grid-row:4}.simulator-button{grid-column:2;grid-row:5}.simulator-preview{max-height:100px}}
+  @media(max-width:620px){.kiosk-layout{gap:12px}.kiosk-frame{min-height:650px}.kiosk-content{padding:20px 12px;min-height:560px}.tutorial-grid{gap:5px}.tutorial-frame{padding:7px 4px}.tutorial-art{height:65px}.tutorial-frame b{font-size:10px}.tutorial-frame small{font-size:9px}.tutorial-heading{align-items:flex-start}.tutorial-heading strong{font-size:12px}.tutorial-heading button{font-size:9px;padding:7px}.virtual-keyboard{padding:8px;margin:12px 0}.key-row{gap:3px;margin:4px 0}.vk-key{min-height:43px;font-size:13px;border-radius:6px}.vk-key.vk-wide{font-size:10px}.scanner-simulator{display:flex;padding:14px}.scanner-hardware{width:100%}.simulator-upload{width:100%}.simulator-button{width:100%}.kiosk-step h2{font-size:21px}.kiosk-step .lead{font-size:12px;margin-bottom:14px}.step-top{margin-bottom:12px}}
+
+  .hidden{display:none!important}.file-label{display:inline-flex;background:var(--teal);color:#fff;padding:11px 15px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer}.file-label input{display:none}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16374e;color:white;border-radius:99px;padding:12px 18px;font-size:12px;font-weight:750;box-shadow:var(--shadow);display:none;z-index:50}.toast.show{display:block}
+  @media(max-width:900px){main{padding:22px 16px 36px}.desktop-grid{grid-template-columns:1fr}.map-panel{min-height:auto}.map-art{height:300px}.topmeta{display:none}}
+  @media(max-width:620px){.topbar{height:auto;min-height:66px;padding:10px 12px;flex-wrap:wrap}.brand{font-size:17px}.switcher{order:3;width:100%;justify-content:space-between}.switcher button{flex:1;padding:9px 6px;font-size:11px}.heading{align-items:flex-start;flex-direction:column}.heading h1{font-size:24px}.demo-tag{font-size:10px}.searchbar{gap:8px}.searchbar .primary{padding:11px 12px;font-size:12px}.kiosk-shell{padding:7px;border-radius:18px}.kiosk-frame{border-width:5px;min-height:650px}.kiosk-content{padding:25px 15px}.kiosk-top{padding:0 12px;height:58px}.kiosk-top .brand{font-size:15px}.kiosk-clock{display:none}.kiosk-welcome h1{font-size:28px}.kiosk-welcome p{font-size:14px}.kiosk-actions{gap:8px}.kiosk-option{padding:16px 8px;min-height:145px;font-size:14px}.kiosk-option small{font-size:10px}.kiosk-step h2{font-size:23px}.kiosk-step .lead{font-size:13px}.kiosk-bottom{padding:10px 12px;font-size:9px}.kiosk-tools{gap:5px}.voice-toggle{font-size:10px;padding:7px 8px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">+</div><div>Saúde Perto<small>Farmácia pública sem viagem perdida</small></div></div>
+  <nav class="switcher" aria-label="Selecionar protótipo">
+    <button class="active" data-view="desktop">Site · Computador</button>
+    <button data-view="mobile">Site · Celular</button>
+    <button data-view="kiosk">Totem</button>
+  </nav>
+  <div class="topmeta"><span class="dot"></span> Protótipo navegável · dados fictícios</div>
+</header>
+<main>
+  <!-- DESKTOP WEB -->
+  <section class="view active" id="desktop">
+    <div class="heading"><div><div class="eyebrow">Consulta de medicamentos · Distrito Federal</div><h1>Encontre seu medicamento antes de sair de casa.</h1><p>Consulte unidades, horários e disponibilidade informada pelas farmácias.</p></div><span class="demo-tag">DEMONSTRAÇÃO — ESTOQUE FICTÍCIO</span></div>
+    <div class="searchbar"><span class="searchicon">⌕</span><input id="desktopSearch" placeholder="Digite o nome do medicamento (ex.: Losartana 50 mg)" /><button class="primary" onclick="searchMedicine('desktop')">Consultar</button><button class="secondary" onclick="showRecipe('desktop')">Enviar receita</button></div>
+    <div class="filters"><button class="chip selected" onclick="filterDesktop('all',this)">Todas as unidades</button><button class="chip" onclick="filterDesktop('open',this)">Abertas agora</button><button class="chip" onclick="filterDesktop('stock',this)">Com medicamento</button><button class="chip" onclick="filterDesktop('pharmacist',this)">Com farmacêutico</button></div>
+    <div class="desktop-grid">
+      <div class="panel map-panel"><div class="panel-title"><h2>Unidades próximas</h2><span class="caption">Mapa ilustrativo · Guará, DF</span></div>
+        <div class="map-art" aria-label="Mapa ilustrativo com três unidades de saúde"><div class="park p1"></div><div class="park p2"></div><div class="water"></div><div class="road r1"></div><div class="road r2"></div><div class="road r3"></div><span class="map-label" style="left:8%;top:8%">GUARÁ II</span><span class="map-label" style="right:9%;top:66%">GUARÁ</span><span class="map-label" style="left:39%;bottom:8%">AV. CENTRAL</span><div class="pin green p-a" title="Aberta"><span>+</span></div><div class="pin amber p-b" title="Fecha em breve"><span>+</span></div><div class="pin red p-c" title="Fechada"><span>+</span></div><div class="you" title="Sua localização aproximada"></div></div>
+        <div class="map-key"><span class="key"><i style="background:#17844e"></i> Aberta</span><span class="key"><i style="background:#d38a13"></i> Fecha em breve</span><span class="key"><i style="background:#bd4141"></i> Fechada</span><span class="key"><i style="background:#357ac0"></i> Você</span></div>
+      </div>
+      <div class="right-col">
+        <div class="panel unit-list"><div class="panel-title"><h2>Farmácias encontradas</h2><span class="caption">3 unidades</span></div>
+          <div class="unit" data-open="true" data-stock="true" data-pharmacist="true"><div class="unit-icon">⌂</div><div><h3>UBS Exemplo — Guará II</h3><p>0,8 km · Atendimento até 18h</p><span class="status s-green">● Aberta agora</span> <span class="status s-blue">Farmacêutico presente</span></div><span class="unit-action">Detalhes →</span></div>
+          <div class="unit" data-open="true" data-stock="true" data-pharmacist="false"><div class="unit-icon">⌂</div><div><h3>UBS Exemplo — QE 38</h3><p>2,1 km · Fecha às 12h</p><span class="status s-amber">● Fecha em 25 min</span></div><span class="unit-action">Detalhes →</span></div>
+          <div class="unit" data-open="false" data-stock="false" data-pharmacist="false"><div class="unit-icon">⌂</div><div><h3>UBS Exemplo — Guará I</h3><p>3,4 km · Reabre amanhã às 7h</p><span class="status s-red">● Fechada</span></div><span class="unit-action">Detalhes →</span></div>
+        </div>
+        <div class="panel detail"><div class="panel-title"><h2>Disponibilidade na UBS Exemplo — Guará II</h2><span class="status s-green">Aberta</span></div><p class="sub">Informações demonstrativas. Confirme no balcão antes do deslocamento.</p>
+          <div class="detail-row"><span class="medicine">Losartana 50 mg</span><span class="qty">Disponível · 24 un.</span></div><div class="detail-row"><span class="medicine">Metformina 850 mg</span><span class="qty">Disponível · 12 un.</span></div><div class="detail-row"><span class="medicine">Insulina NPH</span><span class="status s-amber">Estoque baixo</span></div>
+          <p class="fresh">↻ Estoque atualizado às 08:15 · Farmacêutico presente até 17h</p><div class="disclaimer">A disponibilidade pode mudar durante o dia. A consulta não reserva o medicamento e não substitui a conferência da receita e dos documentos exigidos.</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="desktopRecipe" style="display:none;margin-top:18px;padding:18px"><div class="panel-title"><h2>Pré-análise da receita</h2><button class="ghost" onclick="hideRecipe('desktop')">Fechar ✕</button></div><p class="caption">Envie uma imagem para simular a leitura. Nenhum arquivo será transmitido neste protótipo.</p><label class="file-label">Selecionar imagem da receita <input type="file" accept="image/*" onchange="previewRx(this,'desktop')"></label><div id="desktopRxResult" class="rx-result hidden"></div></div>
+  </section>
+
+  <!-- MOBILE WEB -->
+  <section class="view" id="mobile">
+    <div class="heading"><div><div class="eyebrow">Versão responsiva</div><h1>Consulta no celular</h1><p>Fluxo simplificado para pesquisar perto de casa e conferir antes de sair.</p></div><span class="demo-tag">DEMONSTRAÇÃO — DADOS FICTÍCIOS</span></div>
+    <div class="mobile-stage"><div class="phone"><div class="phone-notch"></div><div class="mobile-app">
+      <div class="mobile-head"><div class="brand"><div class="brandmark">+</div><div>Saúde Perto</div></div><div class="avatar">☻</div></div>
+      <div class="eyebrow">Farmácias públicas · DF</div><h1>Seu remédio,<br>no lugar certo.</h1><p class="intro">Veja onde encontrar seu medicamento e confira o horário de atendimento antes de sair.</p>
+      <div class="mobile-search"><input id="mobileSearch" placeholder="Qual medicamento você procura?"/><button onclick="searchMedicine('mobile')">Buscar</button></div>
+      <button class="secondary" style="width:100%;font-size:11px" onclick="showRecipe('mobile')">▧ Consultar com foto da receita</button>
+      <div class="map-mini"><span class="map-label" style="left:8%;top:9%">GUARÁ II</span><span class="map-label" style="right:8%;bottom:10%">GUARÁ I</span><div class="pin green p-a"><span>+</span></div><div class="pin amber p-b"><span>+</span></div><div class="pin red p-c"><span>+</span></div></div>
+      <div class="mobile-section-title"><h2>Unidades próximas</h2><span>Ver mapa completo ↗</span></div>
+      <div class="mobile-card"><div class="mobile-card-top"><div><h3>UBS Exemplo — Guará II</h3><p>0,8 km · Atendimento até 18h</p></div><span class="status s-green">Aberta</span></div><div class="availability">✓ Losartana 50 mg disponível</div><div class="meta">Estoque atualizado às 08:15 · Farmacêutico presente</div><button onclick="toast('Detalhes da unidade selecionada (demonstração).')">Ver medicamentos e rota</button></div>
+      <div class="mobile-card"><div class="mobile-card-top"><div><h3>UBS Exemplo — QE 38</h3><p>2,1 km · Fecha às 12h</p></div><span class="status s-amber">Fecha em breve</span></div><div class="availability">✓ Losartana 50 mg disponível</div><div class="meta">Estoque atualizado às 07:58</div><button onclick="toast('Detalhes da unidade selecionada (demonstração).')">Ver medicamentos e rota</button></div>
+      <div id="mobileRecipe" class="mobile-card hidden"><h3>Pré-análise da receita</h3><p>Selecione uma imagem para simular a leitura.</p><input type="file" accept="image/*" onchange="previewRx(this,'mobile')"/><div id="mobileRxResult" class="rx-result hidden"></div></div>
+    </div><div class="mobile-bottom"><span>⌂ Início</span><b>⌕ Buscar</b><span>♡ Ajuda</span><span>☰ Menu</span></div></div></div>
+  </section>
+
+  <!-- KIOSK -->
+  <section class="view" id="kiosk">
+    <div class="heading"><div><div class="eyebrow">Atendimento presencial · interface acessível</div><h1>Totem de autoatendimento</h1><p>Botões grandes, linguagem direta e opção de orientação por voz.</p></div><span class="demo-tag">DEMONSTRAÇÃO — DADOS FICTÍCIOS</span></div>
+    <div class="kiosk-shell">
+      <div class="kiosk-layout">
+        <div class="kiosk-device">
+          <div class="kiosk-frame">
+            <div class="kiosk-top">
+              <div class="brand"><div class="brandmark">+</div><div>Saúde Perto</div></div>
+              <div class="kiosk-tools"><span class="kiosk-clock">UBS Exemplo · Guará II</span><button class="voice-toggle" id="voiceBtn" onclick="toggleVoice()">🔊 Voz: ligada</button></div>
+            </div>
+            <div class="kiosk-content">
+              <div id="kioskHome" class="kiosk-welcome">
+                <div class="big-icon">✚</div><div class="eyebrow">Bem-vindo(a)</div>
+                <h1>Vamos encontrar seu remédio?</h1>
+                <p>Você pode procurar pelo nome do medicamento ou consultar usando sua receita.</p>
+                <div class="kiosk-actions">
+                  <button class="kiosk-option" onclick="kioskGo('search')"><span class="ico">⌕</span>Procurar medicamento<small>Digite ou escolha na lista</small></button>
+                  <button class="kiosk-option" onclick="kioskGo('scan')"><span class="ico">▧</span>Ler minha receita<small>Use o scanner ao lado da tela</small></button>
+                </div>
+              </div>
+
+              <div id="kioskSearch" class="kiosk-step hidden">
+                <div class="step-top"><button class="back" onclick="goKioskHome()">← Voltar</button><span class="step-count">ETAPA 1 DE 2</span></div>
+                <div class="eyebrow">Busca de medicamento</div><h2>Qual remédio você procura?</h2>
+                <p class="lead">Toque no campo para abrir o teclado virtual. Você também pode escolher uma sugestão.</p>
+                <input class="big-input" id="kioskMedicine" placeholder="Toque aqui para digitar o medicamento" readonly onclick="openVirtualKeyboard()" aria-label="Toque para digitar o nome do medicamento"/>
+                <div id="kioskKeyboard" class="virtual-keyboard hidden" aria-label="Teclado virtual">
+                  <div class="virtual-keyboard-head"><span>TECLADO VIRTUAL</span><button onclick="hideVirtualKeyboard()">Concluir ✓</button></div>
+                  <div class="key-row"><button class="vk-key" onclick="insertKioskChar('1')">1</button><button class="vk-key" onclick="insertKioskChar('2')">2</button><button class="vk-key" onclick="insertKioskChar('3')">3</button><button class="vk-key" onclick="insertKioskChar('4')">4</button><button class="vk-key" onclick="insertKioskChar('5')">5</button><button class="vk-key" onclick="insertKioskChar('6')">6</button><button class="vk-key" onclick="insertKioskChar('7')">7</button><button class="vk-key" onclick="insertKioskChar('8')">8</button><button class="vk-key" onclick="insertKioskChar('9')">9</button><button class="vk-key" onclick="insertKioskChar('0')">0</button></div>
+                  <div class="key-row"><button class="vk-key" onclick="insertKioskChar('q')">Q</button><button class="vk-key" onclick="insertKioskChar('w')">W</button><button class="vk-key" onclick="insertKioskChar('e')">E</button><button class="vk-key" onclick="insertKioskChar('r')">R</button><button class="vk-key" onclick="insertKioskChar('t')">T</button><button class="vk-key" onclick="insertKioskChar('y')">Y</button><button class="vk-key" onclick="insertKioskChar('u')">U</button><button class="vk-key" onclick="insertKioskChar('i')">I</button><button class="vk-key" onclick="insertKioskChar('o')">O</button><button class="vk-key" onclick="insertKioskChar('p')">P</button></div>
+                  <div class="key-row"><button class="vk-key" onclick="insertKioskChar('a')">A</button><button class="vk-key" onclick="insertKioskChar('s')">S</button><button class="vk-key" onclick="insertKioskChar('d')">D</button><button class="vk-key" onclick="insertKioskChar('f')">F</button><button class="vk-key" onclick="insertKioskChar('g')">G</button><button class="vk-key" onclick="insertKioskChar('h')">H</button><button class="vk-key" onclick="insertKioskChar('j')">J</button><button class="vk-key" onclick="insertKioskChar('k')">K</button><button class="vk-key" onclick="insertKioskChar('l')">L</button></div>
+                  <div class="key-row"><button class="vk-key" onclick="insertKioskChar('z')">Z</button><button class="vk-key" onclick="insertKioskChar('x')">X</button><button class="vk-key" onclick="insertKioskChar('c')">C</button><button class="vk-key" onclick="insertKioskChar('v')">V</button><button class="vk-key" onclick="insertKioskChar('b')">B</button><button class="vk-key" onclick="insertKioskChar('n')">N</button><button class="vk-key" onclick="insertKioskChar('m')">M</button><button class="vk-key" onclick="insertKioskChar('ç')">Ç</button><button class="vk-key vk-wide" onclick="deleteKioskChar()">⌫ Apagar</button></div>
+                  <div class="key-row"><button class="vk-key vk-wide" onclick="clearKioskInput()">Limpar</button><button class="vk-key vk-space" onclick="insertKioskChar(' ')">Espaço</button><button class="vk-key vk-wide" onclick="insertKioskChar('.')">.</button></div>
+                </div>
+                <div class="kiosk-suggestions"><button onclick="setKioskMedicine('Losartana 50 mg')">Losartana 50 mg</button><button onclick="setKioskMedicine('Metformina 850 mg')">Metformina 850 mg</button><button onclick="setKioskMedicine('Insulina NPH')">Insulina NPH</button></div>
+                <div class="kiosk-cta"><button class="primary" onclick="showKioskResults()">Consultar disponibilidade →</button></div>
+              </div>
+
+              <div id="kioskScan" class="kiosk-step hidden">
+                <div class="step-top"><button class="back" onclick="goKioskHome()">← Voltar</button><span class="step-count">LEITURA DA RECEITA</span></div>
+                <div class="eyebrow">Antes de começar</div><h2>Como colocar sua receita no scanner</h2>
+                <p class="lead">Siga as três etapas abaixo. O scanner fica no equipamento, ao lado da tela.</p>
+                <div class="tutorial-wrap">
+                  <div class="tutorial-heading"><strong>Veja como fazer</strong><button onclick="startTutorial()">↻ Repetir tutorial</button></div>
+                  <div class="tutorial-grid" id="tutorialGrid">
+                    <div class="tutorial-frame is-active" data-frame="0">
+                      <span class="frame-number">1</span>
+                      <svg class="tutorial-art" viewBox="0 0 260 125" role="img" aria-label="Pessoa segurando uma receita">
+                        <rect x="78" y="8" width="93" height="107" rx="7" fill="#fff" stroke="#7f9aa5" stroke-width="3"/>
+                        <path d="M94 31h58M94 44h48M94 57h52M94 70h35" stroke="#b1c4ca" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M178 91c-8-10-15-18-23-20-7-2-13 4-10 10l10 15-17-10c-8-5-15 4-9 11l20 20h47c8-8 7-19-1-25-5-4-11-3-17-1z" fill="#edbd98" stroke="#bb896a" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M184 103l17 1" stroke="#bb896a" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="49" cy="28" r="15" fill="#dff2ee"/><path d="M49 18v20M39 28h20" stroke="#087e79" stroke-width="3" stroke-linecap="round"/>
+                      </svg>
+                      <b>Pegue a receita</b><small>Tenha a receita em mãos e deixe-a aberta.</small>
+                    </div>
+                    <div class="tutorial-frame" data-frame="1">
+                      <span class="frame-number">2</span>
+                      <svg class="tutorial-art" viewBox="0 0 260 125" role="img" aria-label="Mão aproximando a receita do scanner">
+                        <rect x="44" y="72" width="172" height="36" rx="9" fill="#cbd9de" stroke="#637f8b" stroke-width="3"/>
+                        <path d="M57 72V58q0-8 9-8h126q9 0 9 8v14" fill="#e8f0f2" stroke="#637f8b" stroke-width="3"/>
+                        <rect x="91" y="27" width="78" height="57" rx="4" fill="#fff" stroke="#7f9aa5" stroke-width="3" transform="rotate(-8 130 55)"/>
+                        <path d="M104 43l49-7M106 54l45-7M108 65l34-5" stroke="#b1c4ca" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M192 12c-9 5-15 12-18 21l-5 17c-2 7 6 11 11 5l9-12-1 20c0 7 10 9 13 2l7-22c3-10-1-20-9-27z" fill="#edbd98" stroke="#bb896a" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M132 4v13m-7-7l7 7 7-7" stroke="#087e79" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <b>Aproxime do scanner</b><small>Leve a folha até a entrada indicada.</small>
+                    </div>
+                    <div class="tutorial-frame" data-frame="2">
+                      <span class="frame-number">3</span>
+                      <svg class="tutorial-art" viewBox="0 0 260 125" role="img" aria-label="Receita posicionada no scanner para leitura">
+                        <rect x="34" y="56" width="192" height="53" rx="10" fill="#cbd9de" stroke="#637f8b" stroke-width="3"/>
+                        <path d="M48 56V39q0-9 10-9h144q10 0 10 9v17" fill="#e8f0f2" stroke="#637f8b" stroke-width="3"/>
+                        <rect x="80" y="8" width="100" height="54" rx="4" fill="#fff" stroke="#7f9aa5" stroke-width="3"/>
+                        <path d="M92 24h75M92 35h68M92 46h48" stroke="#b1c4ca" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M65 56h130" stroke="#253e50" stroke-width="7" stroke-linecap="round"/>
+                        <circle cx="208" cy="83" r="6" fill="#16834a"/><path d="M208 71v-8m0 40v-8" stroke="#16834a" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M20 14h18m-9-9v18" stroke="#087e79" stroke-width="3" stroke-linecap="round"/>
+                      </svg>
+                      <b>Aguarde a leitura</b><small>O sistema vai identificar os dados da receita.</small>
+                    </div>
+                  </div>
+                </div>
+                <div id="scannerStatus" class="scanner-status"><span class="status-lamp"></span><div><strong>Aguardando a receita no scanner</strong><small>Quando a folha for inserida, a leitura será iniciada.</small><div class="scan-progress"><span></span></div></div></div>
+                <div class="kiosk-cta"><button class="secondary" onclick="goKioskHome()">Cancelar</button></div>
+              </div>
+
+              <div id="kioskParsed" class="kiosk-step hidden">
+                <div class="step-top"><button class="back" onclick="kioskGo('scan')">← Voltar</button><span class="step-count">CONFIRME OS DADOS</span></div>
+                <div class="eyebrow">Leitura demonstrativa</div><h2>Encontramos estes medicamentos</h2>
+                <p class="lead">Confira se a leitura está correta. Esta etapa não valida a receita nem autoriza a retirada.</p>
+                <div class="rx-result"><div class="rx-line"><b>Losartana 50 mg</b><span>30 comprimidos</span></div><div class="rx-line"><b>Metformina 850 mg</b><span>60 comprimidos</span></div></div>
+                <div class="disclaimer">A leitura automática pode cometer erros. A farmácia fará a conferência da receita original, dos documentos e das regras aplicáveis.</div>
+                <div class="kiosk-cta" style="margin-top:18px"><button class="secondary" onclick="kioskGo('scan')">Ler novamente</button><button class="primary" onclick="showKioskResults()">Ver onde encontrar →</button></div>
+              </div>
+
+              <div id="kioskResults" class="kiosk-step hidden">
+                <div class="step-top"><button class="back" onclick="goKioskHome()">⌂ Início</button><span class="step-count">RESULTADO DA CONSULTA</span></div>
+                <div class="eyebrow">Disponibilidade demonstrativa</div><h2>Encontramos opções para você.</h2><p class="lead">Veja onde há medicamento e confirme a disponibilidade antes de se deslocar.</p>
+                <div class="result-summary"><span class="result-pill">✓ 1 unidade com estoque</span><span class="result-pill warn">! 1 unidade fecha em breve</span></div>
+                <div class="nearest"><h3>UBS Exemplo — Guará II</h3><p>0,8 km · Aberta até 18h · Farmacêutico presente</p><div class="stock">✓ Losartana 50 mg: 24 unidades informadas</div><div class="stock">✓ Metformina 850 mg: 12 unidades informadas</div><div class="nearest-actions"><button class="primary" onclick="toast('Rota demonstrativa: UBS Exemplo — Guará II')">Ver como chegar</button><button class="secondary" onclick="toast('Orientação impressa (demonstração).')">Imprimir orientação</button></div><div class="kiosk-note">Estoque atualizado às 08:15. A quantidade pode mudar. A consulta não faz reserva.</div></div>
+                <div class="nearest"><h3>UBS Exemplo — QE 38</h3><p>2,1 km · Fecha às 12h</p><div class="stock">✓ Losartana 50 mg: 8 unidades informadas</div><div class="nearest-actions"><button class="secondary" onclick="toast('Rota demonstrativa: UBS Exemplo — QE 38')">Ver como chegar</button></div></div>
+              </div>
+            </div>
+            <div class="kiosk-bottom"><span><strong>Precisa de ajuda?</strong> Chame um atendente.</span><span>Seus dados não ficam salvos neste protótipo.</span></div>
+          </div>
+        </div>
+
+        <aside class="scanner-simulator" aria-label="Simulador externo do scanner físico">
+          <div class="simulator-label">Área de demonstração · fora da tela</div>
+          <h3>Simular inserção da receita</h3>
+          <p>Este controle fica fora da interface do totem. Na apresentação, escolha uma imagem aqui para simular alguém colocando a receita no scanner físico ao lado do equipamento.</p>
+          <div class="scanner-hardware" aria-hidden="true">
+            <div class="scanner-lid"></div><div class="scanner-slot"></div>
+            <small><span class="scanner-light"></span>Scanner físico ilustrativo</small>
+          </div>
+          <div class="simulator-upload">
+            <div class="upload-symbol">▤</div>
+            <p><strong>Receita para demonstração</strong></p>
+            <label for="kioskScanFile">Escolher imagem da receita</label>
+            <input type="file" id="kioskScanFile" accept="image/*" onchange="handleKioskFile(this)" />
+            <p id="simulatorFileName" class="simulator-file-name">Nenhuma imagem selecionada.</p>
+            <img id="simulatorPreview" class="simulator-preview" alt="Prévia da receita selecionada" />
+          </div>
+          <button id="simulateScanButton" class="primary simulator-button" onclick="simulateKioskScan()" disabled>Inserir receita no scanner →</button>
+          <p class="simulator-footnote">Em uma instalação real, a folha seria capturada pelo scanner conectado ao totem. Aqui, o arquivo é usado somente para demonstrar o fluxo.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+let voiceOn=true; let selectedFile='';
+function switchView(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===name));document.querySelectorAll('.switcher button').forEach(b=>b.classList.toggle('active',b.dataset.view===name));window.scrollTo({top:0,behavior:'smooth'});if(name==='kiosk'&&voiceOn)speak('Totem de consulta. Toque em procurar medicamento ou ler minha receita.');}
+document.querySelectorAll('.switcher button').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+function searchMedicine(where){let id=where==='desktop'?'desktopSearch':'mobileSearch';let val=document.getElementById(id).value.trim();if(!val){toast('Digite o nome de um medicamento para consultar.');return}toast('Busca demonstrativa por: '+val+'. Consulte os resultados fictícios exibidos.');}
+function filterDesktop(kind,el){document.querySelectorAll('.filters .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.querySelectorAll('.unit').forEach(u=>{let ok=kind==='all'||(kind==='open'&&u.dataset.open==='true')||(kind==='stock'&&u.dataset.stock==='true')||(kind==='pharmacist'&&u.dataset.pharmacist==='true');u.style.display=ok?'flex':'none'})}
+function showRecipe(where){let el=document.getElementById(where==='desktop'?'desktopRecipe':'mobileRecipe');if(el){el.style.display='block';el.classList.remove('hidden');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function hideRecipe(where){document.getElementById(where==='desktop'?'desktopRecipe':'mobileRecipe').style.display='none'}
+function escapeHtml(value){return String(value).replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]))}
+function previewRx(input,where){let box=document.getElementById(where==='desktop'?'desktopRxResult':'mobileRxResult');if(input.files&&input.files[0]){box.classList.remove('hidden');box.innerHTML='<b>Arquivo selecionado:</b> '+escapeHtml(input.files[0].name)+'<br><br><b>Resultado simulado:</b><div class="rx-line"><b>Losartana 50 mg</b><span>30 comprimidos</span></div><div class="rx-line"><b>Metformina 850 mg</b><span>60 comprimidos</span></div><p class="kiosk-note">Exemplo de extração automática. Não é validação farmacêutica nem análise real do arquivo.</p>'}}
+function toggleVoice(){voiceOn=!voiceOn;document.getElementById('voiceBtn').textContent=voiceOn?'🔊 Voz: ligada':'🔇 Voz: desligada';if(voiceOn)speak('Orientações por voz ativadas.');else if('speechSynthesis'in window)speechSynthesis.cancel()}
+function speak(text){if(!voiceOn||!('speechSynthesis'in window))return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang='pt-BR';u.rate=.92;speechSynthesis.speak(u)}catch(e){}}
+let tutorialTimer=null;let scanTimer=null;let selectedKioskFile=null;let previewObjectUrl=null;let tutorialIndex=0;
+function setKioskScreen(activeId){['kioskHome','kioskSearch','kioskScan','kioskParsed','kioskResults'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==activeId));}
+function stopTutorial(){if(tutorialTimer){clearInterval(tutorialTimer);tutorialTimer=null;}}
+function startTutorial(){
+  stopTutorial();
+  const frames=[...document.querySelectorAll('.tutorial-frame')];
+  if(!frames.length)return;
+  tutorialIndex=0;
+  const activate=()=>{frames.forEach((frame,index)=>frame.classList.toggle('is-active',index===tutorialIndex));tutorialIndex=(tutorialIndex+1)%frames.length;};
+  activate();
+  tutorialTimer=setInterval(activate,1250);
+}
+function goKioskHome(){
+  stopTutorial();
+  hideVirtualKeyboard();
+  if(scanTimer){clearTimeout(scanTimer);scanTimer=null;}
+  setKioskScreen('kioskHome');
+  if(voiceOn)speak('Tela inicial. Escolha procurar medicamento ou ler sua receita.');
+}
+function kioskGo(step){
+  hideVirtualKeyboard();
+  if(step==='search'){
+    stopTutorial();setKioskScreen('kioskSearch');
+    if(voiceOn)speak('Toque no campo para abrir o teclado virtual. Digite o nome do medicamento ou escolha uma sugestão.');
+  }
+  if(step==='scan'){
+    setKioskScreen('kioskScan');startTutorial();
+    const status=document.getElementById('scannerStatus');
+    if(status){status.className='scanner-status';status.querySelector('strong').textContent='Aguardando a receita no scanner';status.querySelector('small').textContent='Quando a folha for inserida, a leitura será iniciada.';}
+    if(voiceOn)speak('Veja as três etapas na tela. Primeiro, pegue sua receita. Depois, aproxime a folha da entrada do scanner e posicione-a. Por último, aguarde a leitura.');
+  }
+}
+function openVirtualKeyboard(){
+  const keyboard=document.getElementById('kioskKeyboard');
+  keyboard.classList.remove('hidden');
+  if(voiceOn)speak('Teclado virtual aberto. Toque nas letras e nos números para digitar.');
+}
+function hideVirtualKeyboard(){const keyboard=document.getElementById('kioskKeyboard');if(keyboard)keyboard.classList.add('hidden');}
+function insertKioskChar(char){const input=document.getElementById('kioskMedicine');input.value+=char;}
+function deleteKioskChar(){const input=document.getElementById('kioskMedicine');input.value=input.value.slice(0,-1);}
+function clearKioskInput(){document.getElementById('kioskMedicine').value='';}
+function setKioskMedicine(value){document.getElementById('kioskMedicine').value=value;hideVirtualKeyboard();if(voiceOn)speak(value+' selecionado.');}
+function showKioskResults(){
+  hideVirtualKeyboard();stopTutorial();
+  setKioskScreen('kioskResults');
+  if(voiceOn)speak('Encontramos uma unidade com estoque. UBS Exemplo Guará dois, aberta até dezoito horas. Estoque sujeito a alteração.');
+}
+function showKioskParsed(){
+  stopTutorial();
+  setKioskScreen('kioskParsed');
+  if(voiceOn)speak('A leitura demonstrativa identificou losartana cinquenta miligramas e metformina oitocentos e cinquenta miligramas. Confira os dados antes de continuar.');
+}
+function handleKioskFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  selectedKioskFile=file;
+  const fileName=document.getElementById('simulatorFileName');
+  const preview=document.getElementById('simulatorPreview');
+  const button=document.getElementById('simulateScanButton');
+  fileName.textContent='Selecionado: '+file.name;
+  if(previewObjectUrl)URL.revokeObjectURL(previewObjectUrl);
+  previewObjectUrl=URL.createObjectURL(file);
+  preview.src=previewObjectUrl;
+  preview.style.display='block';
+  button.disabled=false;
+  if(voiceOn)speak('Imagem escolhida para a demonstração. Agora toque em inserir receita no scanner.');
+}
+function simulateKioskScan(){
+  if(!selectedKioskFile){toast('Primeiro escolha uma imagem na área externa do scanner.');return;}
+  const status=document.getElementById('scannerStatus');
+  const button=document.getElementById('simulateScanButton');
+  if(status){
+    status.className='scanner-status scanning received';
+    status.querySelector('strong').textContent='Receita inserida. Realizando leitura...';
+    status.querySelector('small').textContent='Aguarde enquanto o sistema processa a imagem selecionada.';
+  }
+  button.disabled=true;
+  button.textContent='Lendo receita...';
+  if(voiceOn)speak('Receita recebida. Iniciando a leitura. Aguarde um momento.');
+  if(scanTimer)clearTimeout(scanTimer);
+  scanTimer=setTimeout(()=>{
+    if(status){status.className='scanner-status received';status.querySelector('strong').textContent='Leitura concluída';status.querySelector('small').textContent='A receita foi processada na simulação. Confira os medicamentos identificados.';}
+    button.disabled=false;
+    button.textContent='Inserir novamente →';
+    showKioskParsed();
+    scanTimer=null;
+  },1700);
+}
+// O protótipo usa estoque/localização fictícios e OCR simulado; o arquivo escolhido fora da tela apenas aciona o fluxo demonstrativo. Nenhuma API externa é chamada.
+</script>
+</body>
+</html>
